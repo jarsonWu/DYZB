@@ -11,14 +11,15 @@ import UIKit
 private let kTitleViewH : CGFloat = 40
 class HomeViewController: UIViewController {
 
-    private lazy var pageTitleView : PageTitleView = {
-        let titleFrame = CGRect(x: 0, y: kStatusBarH + kNavigationBarH, width: kScreenW, height: kTitleViewH)
+    private lazy var pageTitleView : PageTitleView = {[weak self] in
+         let titleFrame = CGRect(x: 0, y: kStatusBarH + kNavigationBarH, width: kScreenW, height: kTitleViewH)
         let titles = ["推荐","游戏","娱乐","趣玩"]
         let titleView = PageTitleView(frame: titleFrame, titles: titles)
+        titleView.delegate = self
         return titleView
     }()
     
-    private lazy var pageContentView : PageContentView = {
+    private lazy var pageContentView : PageContentView = {[weak self] in
         let contentH = kScreenH-kStatusBarH-kNavigationBarH-kTitleViewH
         let contentFrame = CGRect(x: 0, y: kStatusBarH+kNavigationBarH+kTitleViewH, width: kScreenW, height: contentH)
         
@@ -67,5 +68,11 @@ extension HomeViewController{
         let qrcodeItem = UIBarButtonItem(imageName: "Image_scan", highImageName: "Image_scan_click", size: size)
         
         navigationItem.rightBarButtonItems=[historyItem,searchItem,qrcodeItem]
+    }
+}
+
+extension HomeViewController : PageTitleViewDelegate{
+    func pageTitleView(titleView: PageTitleView, selectedIndex index: Int) {
+        pageContentView.setCurrentIndex(currentIndex: index)
     }
 }

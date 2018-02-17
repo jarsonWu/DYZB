@@ -8,10 +8,16 @@
 
 import UIKit
 
+protocol PageTitleViewDelegate:class {
+    func pageTitleView(titleView : PageTitleView,selectedIndex index : Int)
+}
+
 private let KScorllLineH : CGFloat = 2
 class PageTitleView: UIView {
-    
+ 
+    private var currentIndex :Int = 0
     private var titles : [String]
+    weak var delegate :PageTitleViewDelegate?
     
     private lazy var titleLabels : [UILabel] = [UILabel]()
     private lazy var scrollView : UIScrollView = {
@@ -70,6 +76,10 @@ extension PageTitleView{
             scrollView.addSubview(label)
             
             titleLabels.append(label)
+            
+            label.isUserInteractionEnabled = true
+            let tapGes = UITapGestureRecognizer(target: self, action: #selector(self.titleLabelClick(tabGes:)))
+            label.addGestureRecognizer(tapGes)
         }
     }
 
@@ -86,5 +96,25 @@ extension PageTitleView{
         firstLabel.textColor = UIColor.orange
         scrollView.addSubview(scollLine)
         scollLine.frame = CGRect(x: firstLabel.frame.origin.x, y: frame.height - KScorllLineH, width: firstLabel.frame.width, height: KScorllLineH)
+    }
+}
+
+//Mark:- 监听label点击
+extension PageTitleView{
+    @objc private func titleLabelClick(tabGes: UITapGestureRecognizer){
+        guard let currentLabel = tabGes.view as? UILabel else {return}
+        
+        let oldLabel = titleLabels[currentIndex]
+        currentLabel.textColor = UIColor.orange
+        oldLabel.textColor = UIColor.darkGray
+        currentIndex = currentLabel.tag
+        
+        let scollLineX = CGFloat(currentLabel.tag) * scollLine.frame.width
+        
+        UIView.animate(withDuration: 0.15){
+            self.scollLine.frame.origin.x = scollLineX
+        }
+        
+        delegate?.pageTitleView(titleView: self, selectedIndex: currentIndex)
     }
 }

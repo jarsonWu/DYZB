@@ -12,11 +12,11 @@ private let ContentCellID = "ContentCellID"
 class PageContentView: UIView {
 
     private var childVcs : [UIViewController]
-    private var parentViewController : UIViewController
+    private weak var parentViewController : UIViewController?
     
-    private lazy var collectionView : UICollectionView = {
+    private lazy var collectionView : UICollectionView = {[weak self] in
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = self.bounds.size
+        layout.itemSize = (self?.bounds.size)!
         layout.minimumLineSpacing = 0
         layout.minimumInteritemSpacing = 0
         layout.scrollDirection = .horizontal
@@ -29,7 +29,7 @@ class PageContentView: UIView {
         collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: ContentCellID)
         return collectionView
     }()
-    init(frame: CGRect,childVcs: [UIViewController],parentViewController:UIViewController) {
+    init(frame: CGRect,childVcs: [UIViewController],parentViewController:UIViewController?) {
         self.childVcs = childVcs
         self.parentViewController = parentViewController
         super.init(frame : frame)
@@ -47,7 +47,7 @@ class PageContentView: UIView {
 extension PageContentView{
     private func setupUI(){
         for childVc in childVcs{
-            parentViewController.addChildViewController(childVc)
+            parentViewController?.addChildViewController(childVc)
         }
         
         addSubview(collectionView)
@@ -73,4 +73,11 @@ extension PageContentView : UICollectionViewDataSource{
     }
     
     
+}
+
+extension PageContentView{
+    func setCurrentIndex(currentIndex : Int){
+        let offsetX = CGFloat(currentIndex) * collectionView.frame.width
+        collectionView.setContentOffset(CGPoint(x:offsetX,y:0), animated: false)
+    }
 }
