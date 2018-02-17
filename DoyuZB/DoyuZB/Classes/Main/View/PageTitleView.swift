@@ -28,6 +28,7 @@ class PageTitleView: UIView {
         scollLine.backgroundColor = UIColor.orange
         return scollLine
     }()
+    
     init(frame:CGRect,titles:[String]) {
         self.titles=titles
         super.init(frame:frame)
